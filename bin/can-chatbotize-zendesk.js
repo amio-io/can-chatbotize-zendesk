@@ -1,6 +1,7 @@
 const env = require('./zendesk-env')
 const axios = require('axios')
 const Websocket = require('ws')
+const zendeskEnv = require('./zendesk-env')
 
 const REQUEST_ID = {
     MESSAGE_SUBSCRIPTION: 111,
@@ -16,15 +17,6 @@ const startAgentQuery = `mutation {
   }
 }`;
 
-
-const startAgentRequest = axios({
-    method: 'post',
-    url: 'https://chat-api.zopim.com/graphql/request',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    data: {query: startAgentQuery}
-})
 
 function subscribeToMessages(websocket) {
     const messageSubscriptionQuery = {
@@ -91,7 +83,7 @@ function getMessageSubscriptionId(data) {
     return null
 }
 
-function sendStructuredMessage(websocket) {
+function sendStructuredMessage(websocket, chatMessage) {
     const sendQuickRepliesQuery = {
         payload: {
             query: `mutation {
@@ -153,20 +145,26 @@ function sendStructuredMessage(websocket) {
 }
 
 async function canChatbotizeZendesk() {
-    const response = await startAgentRequest
+    if(!env.oauthAccessToken){
+        console.log('!!! First get the access token then Bla and then restart the app'); // TODO finish
+        return
+    }
 
-    const websocketUrl = response.data.data.startAgentSession.websocket_url
-    console.log(`Agent Session has started. The websocket URL is ${websocketUrl}`)
+    try {
+        const response = await axios({
+            method: 'post',
+            url: 'https://chat-api.zopim.com/graphql/request',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {query: startAgentQuery}
+        })
+        const websocketUrl = response.data.data.startAgentSession.websocket_url
+        console.log(`Agent Session has started. The websocket URL is ${websocketUrl}`)
 
-    const websocket = await openWebsocket(websocketUrl)
-    subscribeToMessages(websocket)
-    makeAgentOnline(websocket)
-
-    websocket.on('message', function(message) {
-
-    })
-
-    websocket.on('open', () => {
+        const websocket = await openWebsocket(websocketUrl)
+        subscribeToMessages(websocket)
+        makeAgentOnline(websocket)
 
         websocket.on('message', function(message) {
             const data = JSON.parse(message);
@@ -180,17 +178,23 @@ async function canChatbotizeZendesk() {
             // Listen to successful message subscription request
             // const messageSubscriptionId = getMessageSubscriptionId(data);
 
-            if(data.sig === 'DATA') {
+            if(data.sig === 'DATA' && data.payload.data.message.node.from.__typename === 'Visitor') {
                 console.log('Reply with a quick replies message.')
                 const chatMessage = data.payload.data.message.node;
                 const sender = chatMessage.from;
 
                 console.log(`[message] Received: '${chatMessage.content}' from: '${sender.display_name}'`);
 
-                sendStructuredMessage(websocket)
+                sendStructuredMessage(websocket, chatMessage)
             }
         })
-    })
+    } catch(e){
+        console.log('Error: ', e.response.data.errors[0])
+        console.log('Deleting oauthAccessToken so that it can be authorized again.')
+        zendeskEnv.oauthAccessToken = null
+        return
+    }
+
 
 }
 

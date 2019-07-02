@@ -1,21 +1,164 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
 
     <!-- Start of  Zendesk Widget script -->
-        <script id="ze-snippet"
-                src="https://static.zdassets.com/ekr/snippet.js?key=5091a943-7f23-42fc-8a71-d9c34e0db8ba"></script>
-        <!-- End of  Zendesk Widget script -->
+    <script id="ze-snippet"
+            src="https://static.zdassets.com/ekr/snippet.js?key=5091a943-7f23-42fc-8a71-d9c34e0db8ba"></script>
+    <!-- End of  Zendesk Widget script -->
 
 
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+</head>
+<body>
+<h1><%= title %></h1>
+<p>Welcome to <%= title %></p>
 
-    <a href="https://www.zopim.com/oauth2/authorizations/new?response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A8000&client_id=W1BxrgKaoVm1a7HXOtEN5JLYBm7Y2aiQJW08XxFRbqb32Cc9sk&scope=read%20write%20chat&subdomain=poc123123123123213213">Click
-        me</a>
-  </body>
+<div class="accordion" id="accordionExample">
+    <div class="card">
+        <div class="card-header" id="headingOne">
+            <h2 class="mb-0">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                        aria-expanded="<%= nextStep.subdomain %>" aria-controls="collapseOne">
+                    1. Get subdomain
+                </button>
+            </h2>
+        </div>
+
+        <div id="collapseOne" class="collapse <%= nextStep.subdomain ? 'show' : '' %>" aria-labelledby="headingOne"
+             data-parent="#accordionExample">
+            <div class="card-body">
+                <p>
+                    <b>Subdomain</b> is part of the URL before <b>.zendesk.com</b> when you are logged in Zendesk. In
+                    our case it is <b>subdomain=amio</b>:
+                    <br/>
+                    <img src="/images/subdomain.png"/>
+                </p>
+
+                <form id="step-subdomain" method="get">
+
+                    <div class="form-group form-check">
+                        <label for="input-subdomain">Subdomain</label>
+                        <input type="text" class="form-control" id="input-subdomain" name="value"
+                               value="<%= zendeskEnv.subdomain %>">
+                        <input type="hidden" name="step" value="subdomain">
+                    </div>
+                    <button type="submit" form="step-subdomain" class="btn btn-primary">Submit</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="headingTwo">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo"
+                        aria-expanded="<%= nextStep.clientId %>" aria-controls="collapseTwo">
+                    2. Get cliend_id
+                </button>
+            </h2>
+        </div>
+        <div id="collapseTwo" class="collapse <%= nextStep.clientId ? 'show' : '' %>" aria-labelledby="headingTwo"
+             data-parent="#accordionExample">
+            <div class="card-body">
+                <p>To obtain <b>client_id</b>, we need to setup an API client first.</p>
+                <p>
+                    1. Open <a href="https://<%= zendeskEnv.subdomain %>.zendesk.com/chat/agent#account/api_&_sdks">https://<%= zendeskEnv.subdomain %>
+                        .zendesk.com/chat/agent#account/api_&_sdks</a>
+                    <br/>
+                    OR navigate to <b>Settings → Account → API & SDKs</b>
+                </p>
+
+                <p>2. Click <b>Add API client</b></p>
+                <p>
+                    3. Fill anything in <b>Client name</b> and <b>company</b>. In <b>Redirect URLs</b> fill <a>http://localhost:8000</a>
+                </p>
+                <p>4. Hit <b>Create API client</b>. You should see something similar now:
+                    <br/>
+                    <img src="/images/api-client-created.png" style="border-style: solid;"/>
+
+                </p>
+                <p>
+                    5. Copy <b>Client ID</b> to this input and submit.
+                <form id="step-client-id" method="get">
+                    <div class="form-group form-check">
+                        <label for="input-client-id">Client ID</label>
+                        <input type="text" class="form-control" id="input-client-id" name="value"
+                               value="<%= zendeskEnv.clientId %>">
+                        <input type="hidden" name="step" value="clientId">
+                    </div>
+                    <button type="submit" form="step-client-id" class="btn btn-primary">Submit</button>
+                </form>
+                </p>
+
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header" id="headingThree">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree"
+                        aria-expanded="<%= nextStep.zendeskOauth %>" aria-controls="collapseThree">
+                    3. Authorize Zendesk via OAuth
+                </button>
+            </h2>
+        </div>
+        <div id="collapseThree" class="collapse <%= nextStep.zendeskOauth ? 'show' : '' %>" aria-labelledby="headingThree" data-parent="#accordionExample">
+            <div class="card-body">
+                <p>
+                    In order to make requests to Zendesk (Zopim) Chat, we will need to authorize API access.
+                </p>
+                <p>
+                    After clicking <b>Authorize</b> button, you will be redirected to Zendesk OAuth.
+                    <br/>
+                    Fill in the credentials and you will be redirected back to this page.
+                </p>
+
+                <a class="btn btn-primary" role="button"
+                   href="https://www.zopim.com/oauth2/authorizations/new?response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A8000&client_id=<%= zendeskEnv.clientId %>&scope=read%20write%20chat&subdomain=<%= zendeskEnv.subdomain %>">
+                    Authorize
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header" id="headingThree">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse4"
+                        aria-expanded="<%= nextStep.oauthAccessToken %>" aria-controls="collapse4">
+                    4. Copy access_token
+                </button>
+            </h2>
+        </div>
+        <div id="collapse4" class="collapse <%= nextStep.oauthAccessToken ? 'show' : '' %>" aria-labelledby="heading4" data-parent="#accordionExample">
+            <div class="card-body">
+                <p>
+                    XXX
+                </p>
+
+
+                <a class="btn btn-primary" role="button"
+                   href="https://www.zopim.com/oauth2/authorizations/new?response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A8000&client_id=<%= zendeskEnv.clientId %>&scope=read%20write%20chat&subdomain=<%= zendeskEnv.subdomain %>">
+                    Authorize
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
 </html>
