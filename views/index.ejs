@@ -148,14 +148,56 @@
         <div id="collapse4" class="collapse <%= nextStep.oauthAccessToken ? 'show' : '' %>" aria-labelledby="heading4" data-parent="#accordionExample">
             <div class="card-body">
                 <p>
-                    XXX
+                    Copy <b>access_token</b> from the URL.
+                    <br/>
+                    <img src="images/access_token.png">
                 </p>
 
+                <form id="step-access-token-obtained" method="get">
+                    <div class="form-group form-check">
+                        <label for="input-access-token-obtained">Access Token</label>
+                        <input type="text" class="form-control" id="input-access-token-obtained" name="value"
+                               value="<%= zendeskEnv.oauthAccessToken %>">
+                        <input type="hidden" name="step" value="accessTokenObtained">
+                    </div>
+                    <button type="submit" form="step-access-token-obtained" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-                <a class="btn btn-primary" role="button"
-                   href="https://www.zopim.com/oauth2/authorizations/new?response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A8000&client_id=<%= zendeskEnv.clientId %>&scope=read%20write%20chat&subdomain=<%= zendeskEnv.subdomain %>">
-                    Authorize
-                </a>
+    <div class="card">
+        <div class="card-header" id="headingThree">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse5"
+                        aria-expanded="<%= nextStep.canChatbotizeZendesk %>" aria-controls="collapse5">
+                    5. Verify your Zendesk supports buttons
+                </button>
+            </h2>
+        </div>
+        <div id="collapse5" class="collapse <%= nextStep.canChatbotizeZendesk ? 'show' : '' %>" aria-labelledby="heading4" data-parent="#accordionExample">
+            <div class="card-body">
+                <p>
+                    At this stage you should see in the botton right corner an active chat:
+                    <br/>
+                    <img src="images/active-chat.png">
+                </p>
+
+                <p>
+                    Open it and send a message. This way we'll be able to send back a message with buttons.
+                    <br/>
+                    If everything worked as expected, you should see something similar:
+                    <br/>
+                    <img src="images/buttons.png">
+                </p>
+
+                <p>
+                    If you don't see buttons, you probably need to upgrade your Zendesk plan or your Zendesk web SDK.
+                </p>
+
+                <p>
+                    FINISHED.
+                </p>
             </div>
         </div>
     </div>

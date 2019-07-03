@@ -35,8 +35,12 @@ router.get('/', function(req, res, next) {
     else if(step === 'zendeskOauth' && !req.query.step){
         nextStep.oauthAccessToken = true
     }
+    else if(step === 'accessTokenObtained'){
+        zendeskEnv.oauthAccessToken = value
+        nextStep.canChatbotizeZendesk = true
+        canChatbotizeZendesk();
+    }
 
-    // canChatbotizeZendesk();
 
 
     console.log('response: ', zendeskEnv, nextStep)

@@ -9,15 +9,6 @@ const REQUEST_ID = {
     SEND_MESSAGE: 333
 }
 
-const startAgentQuery = `mutation {
-  startAgentSession(access_token: "${env.oauthAccessToken}") {
-    websocket_url
-    session_id
-    client_id
-  }
-}`;
-
-
 function subscribeToMessages(websocket) {
     const messageSubscriptionQuery = {
         payload: {
@@ -157,7 +148,13 @@ async function canChatbotizeZendesk() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            data: {query: startAgentQuery}
+            data: {query: `mutation {
+              startAgentSession(access_token: "${env.oauthAccessToken}") {
+                websocket_url
+                session_id
+                client_id
+              }
+            }`}
         })
         const websocketUrl = response.data.data.startAgentSession.websocket_url
         console.log(`Agent Session has started. The websocket URL is ${websocketUrl}`)
