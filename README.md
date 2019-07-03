@@ -4,7 +4,7 @@ This utility aims to verify if your Zendesk version can use features every chatb
 
 ## ⚠ Disclaimer ⚠
 - Follow all the documentation and wizzard step by step.
-- We are aware that <b>code style</b> of this lib is terrible. The purpose was to be quick. 
+- We are aware that <b>code style</b> of this lib is terrible. The purpose was to be quick. For this reason we also skipped some best practices.  
  
 ## Prerequisites
 - [NodeJs](https://nodejs.org/en/download/) of versions 8.0.0 or higher
