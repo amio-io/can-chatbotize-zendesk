@@ -13,4 +13,4 @@ This utility aims to verify if your Zendesk version can use features every chatb
 ## How to run it?
 1. Install dependencies - `npm install`
 2. Start the script - `npm run start`
-3. Open browser at `http://localhost:8000` and follow the wizzard 🧙🏼‍♂️
+3. Open browser at `http://localhost:8000` and follow the wizard 🧙🏼‍♂️
